@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "FMHttpPluginDelegate.h"
+#import "FMHttpParseDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -42,8 +43,8 @@ typedef NS_ENUM(NSUInteger, FMRequestSerializerType) {
 /// 请求头，默认为@{}
 @property (nonatomic, strong) NSDictionary *httpRequestHeaders;
 
-/// 解析器类，默认使用FMParse
-@property (nonatomic, strong) Class parseClass;
+// json转model的解析器
+@property (nonatomic, strong) id<FMHttpParseDelegate> parse;
 
 /// 插件
 @property (nonatomic, strong) NSArray<id<FMHttpPluginDelegate>> *plugins;

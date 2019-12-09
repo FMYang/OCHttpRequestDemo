@@ -31,6 +31,10 @@
     return @"";
 }
 
+- (NSTimeInterval)timeoutInterval {
+    return 0;
+}
+
 #pragma mark -
 - (NSString *)requestMethod {
     switch (self.method) {

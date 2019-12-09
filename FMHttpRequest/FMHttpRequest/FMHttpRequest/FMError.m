@@ -10,4 +10,10 @@
 
 @implementation FMError
 
++ (FMError *)processError:(NSError *)error {
+    FMError *fmError = [[FMError alloc] init];
+    fmError.error = error;
+    return fmError;
+}
+
 @end

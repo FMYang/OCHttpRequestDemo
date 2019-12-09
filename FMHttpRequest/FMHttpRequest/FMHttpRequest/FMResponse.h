@@ -45,6 +45,16 @@ typedef NS_ENUM(NSUInteger, FMResponseState) {
 /// data
 @property (nonatomic, strong) id _Nullable data;
 
+/// 包装响应结果
+/// @param response <#response description#>
+/// @param responseObject <#responseObject description#>
+/// @param request <#request description#>
+/// @param error <#error description#>
++ (FMResponse *)processResult:(NSURLResponse *)response
+               responseObject:(id)responseObject
+                      request:(FMRequest *)request
+                        error:(NSError *)error;
+
 @end
 
 NS_ASSUME_NONNULL_END

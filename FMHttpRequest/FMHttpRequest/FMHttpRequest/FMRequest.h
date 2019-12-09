@@ -34,11 +34,21 @@ typedef NS_ENUM(NSUInteger, FMHttpReuqestMethod) {
 /// 请求参数
 @property (nonatomic, strong) NSDictionary *params;
 
+/// 请求超时时间
+@property (nonatomic, assign) NSTimeInterval timeoutInterval;
+
+/// 请求头
+@property (nonatomic, strong) NSDictionary *httpHeader;
+
+/// 公共参数
+@property (nonatomic, strong) NSDictionary *publicParams;
+
 /// 响应模型类，网络请求的JSON转成哪个模型
 @property (nonatomic, assign) Class responseClass;
 
 /// 请求方法字符串，请求序列化的时候用到
 - (NSString *)requestMethod;
+
 @end
 
 NS_ASSUME_NONNULL_END

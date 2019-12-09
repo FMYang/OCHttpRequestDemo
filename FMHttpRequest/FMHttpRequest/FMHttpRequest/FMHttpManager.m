@@ -12,6 +12,7 @@
 #import "FMHttpLogger.h"
 #import "FMHttpConfig.h"
 #import "FMHttpPluginDelegate.h"
+#import "FMError.h"
 
 @interface FMHttpManager()
 
@@ -26,8 +27,6 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         instance = [[FMHttpManager alloc] init];
-        // 设置默认解析器
-        [instance setupParse:[instance defaultParse]];
     });
     return instance;
 }
@@ -37,15 +36,6 @@
         _manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:nil];
     }
     return _manager;
-}
-
-- (id<FMHttpParseDelegate>)defaultParse {
-    FMParse *parse = [[FMParse alloc] init];
-    return parse;
-}
-
-- (void)setupParse:(id<FMHttpParseDelegate>)parse {
-    self.parse = parse;
 }
 
 + (void)sendRequest:(FMRequest *)request completeHandler:(void (^)(FMResponse * _Nonnull response))complete {
@@ -74,7 +64,12 @@
 - (void)dataTaskWithRequest:(FMRequest *)request
             completeHandler:(nonnull void (^)(FMResponse *response))complete {
     NSMutableURLRequest *urlRequest = [self serializerRequest:request];
-    urlRequest.timeoutInterval = 15.0;
+    // 优先使用FMRequest设置的超时时间，如果未设置，则使用配置项的
+    if(request.timeoutInterval > 0) {
+        urlRequest.timeoutInterval = request.timeoutInterval;
+    } else {
+        urlRequest.timeoutInterval = [FMHttpConfig shared].timeoutInterval;
+    }
     
     // 插件willSend方法
     NSArray *plugins = [[FMHttpConfig shared] plugins];
@@ -89,21 +84,42 @@
                        uploadProgress:nil
                      downloadProgress:nil
                     completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
-        responseObject = responseObject[@"result"];
-        FMResponse *fmResponse;
-        if (error) {
-            fmResponse = [[FMResponse alloc] init];
-            fmResponse.state = FMResponseStateFail;
-            fmResponse.data = nil;
+        /*
+         responseObject应该遵送restAPi规范，与服务端约定好格式{"code":0, "message":"", "data":{}}
+         */
+        NSString *codeKey = [FMHttpConfig shared].codeKey;
+        NSString *dataKey = [FMHttpConfig shared].dataKey;
+        NSString *successCode = [FMHttpConfig shared].successCode;
+        id responseCode = responseObject[codeKey];
+
+        FMResponse *fmResponse = nil;
+        FMError *fmError = nil;
+
+        if(error) {
+            // http请求失败处理
+            fmError = [FMError processError:error];
         } else {
-            id result = [self.parse mapJSON:responseObject cls:request.responseClass];
-            fmResponse = [[FMResponse alloc] init];
-            fmResponse.data = result;
+            // http请求成功，业务逻辑处理
+            // 业务请求成功，响应的code与服务的成功状态码对比
+            BOOL bussinessSuccess = NO;
+            if([responseCode isKindOfClass:[NSString class]]) {
+                if([responseCode isEqualToString:successCode]) {
+                    bussinessSuccess = YES;
+                }
+            } else if([responseCode isKindOfClass:[NSNumber class]]) {
+                if([responseCode intValue] == [successCode intValue]) {
+                    bussinessSuccess = YES;
+                }
+            }
+            
+            if(bussinessSuccess) {
+                id data = responseObject[dataKey];
+                fmResponse = [FMResponse processResult:response responseObject:data request:request error:error];
+            } else {
+                // 业务失败处理，走错误回调
+                fmError = [FMError processError:error];
+            }
         }
-        NSLog(@"%ld", [((NSHTTPURLResponse *)response) statusCode]);
-        fmResponse.response = response;
-        fmResponse.responseObject = responseObject;
-        fmResponse.orignalrequest = urlRequest;
         
         // 插件didReceive方法
         NSArray *plugins = [[FMHttpConfig shared] plugins];
@@ -112,6 +128,7 @@
                 [obj didReceive:fmResponse];
             }
         }];
+        
         complete(fmResponse);
     }];
     [task resume];

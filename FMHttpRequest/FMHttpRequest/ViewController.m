@@ -23,7 +23,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    // https://api.apiopen.top/getJoke?page=1&count=2&type=video
+    // https://api.apiopen.top/getJoke?page=1&count=2&type=video （实时段子,神评版本）
     
     // 模拟数据
 //    FMRequest *request = [[FMRequest alloc] init];
@@ -36,6 +36,7 @@
     FMHttpConfig *config = [FMHttpConfig shared];
     config.dataKey = @"result";
     config.plugins = @[[FMHttpLogger class], [FMLoadingPlugin class]];
+    config.parse = [[FMParse alloc] init];
     
     CustomRequest *request = [[CustomRequest alloc] initWithPage:1
                                                            count:2

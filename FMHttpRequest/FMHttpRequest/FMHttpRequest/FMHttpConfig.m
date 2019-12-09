@@ -30,7 +30,6 @@
         _successCode = @"200";
         _timeoutInterval = 30.0;
         _httpRequestHeaders = @{};
-        _parseClass = [FMParse class];
     }
     return self;
 }

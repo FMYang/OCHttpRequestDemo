@@ -19,7 +19,12 @@
     NSDictionary *httpHeader = _request.allHTTPHeaderFields;
     NSString *params = [[NSString alloc] initWithData:_request.HTTPBody encoding:NSUTF8StringEncoding];
     NSError *error;
-    NSData *responseData = [NSJSONSerialization dataWithJSONObject:response.responseObject options:0 error:&error];
+    NSData *responseData = nil;
+    @try {
+         responseData = [NSJSONSerialization dataWithJSONObject:response.responseObject options:0 error:&error];
+    } @catch (NSException *exception) {
+        NSLog(@"%@", [exception description]);
+    }
     NSString *responseString = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
     
     NSMutableString *output = [NSMutableString string];

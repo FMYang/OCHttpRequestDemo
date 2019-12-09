@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 安全策略
 @property (nonatomic, strong) AFSecurityPolicy *securityPolicy;
 
-/// 获取AFHTTPSessionManager实例的单例方法
+/// 获取AFHTTPSessionManager实例的方法
 + (instancetype)manager;
 
 /// 从指定url初始化AFHTTPSessionManager实例对象
