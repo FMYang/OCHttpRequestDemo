@@ -150,14 +150,51 @@
     } else {
         @throw @"未设置服务器服务器地址";
     }
+    
+    // 添加公共请求参数
+    NSDictionary *params = [self addPublicParams:request.params];
+    
     NSString *requestUrl = [[NSURL URLWithString:request.path relativeToURL:baseURL] absoluteString];
     NSMutableURLRequest *urlRequest = [serialize requestWithMethod:[request requestMethod]
                                                          URLString:requestUrl
-                                                        parameters:request.params error:&serializationError];
+                                                        parameters:params error:&serializationError];
 
+    /// 添加请求头
+    [self addHttpHeader:urlRequest];
+    
     return urlRequest;
 }
 
+/// 添加请求头
+- (void)addHttpHeader:(NSMutableURLRequest *)request {
+    NSDictionary *httpReqeustHeader = [FMHttpConfig shared].httpRequestHeaders;
+    if(!httpReqeustHeader || httpReqeustHeader.allKeys.count == 0) { return; }
+    [httpReqeustHeader enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+        if(key && obj) {
+            [request setValue:obj forHTTPHeaderField:key];
+        }
+    }];
+}
+
+/// 添加公共参数
+- (NSDictionary *)addPublicParams:(NSDictionary *)params {
+    NSDictionary *publicParams = [FMHttpConfig shared].publicParams;
+    if(!publicParams || publicParams.allKeys.count == 0) { return params; }
+    NSMutableDictionary *newParams = [params mutableCopy];
+    [publicParams enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+        if(key && obj) {
+            [newParams setValue:obj forKey:key];
+        }
+    }];
+    return newParams;
+}
+
+// 结果校验
+- (BOOL)validObject:(id)responseObject {
+    return [NSJSONSerialization isValidJSONObject:responseObject];
+}
+
+#pragma mark - 网络检测
 - (BOOL)networkReachable {
     return [AFNetworkReachabilityManager sharedManager].reachable;
 }

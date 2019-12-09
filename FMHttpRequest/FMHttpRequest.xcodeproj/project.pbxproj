@@ -227,6 +227,8 @@
 				88310226239CFA0A00C0DF64 /* PrefixHeader.pch */,
 				8879CC9C239D54500080CAF3 /* FMLoadingPlugin.h */,
 				8879CC9D239D54500080CAF3 /* FMLoadingPlugin.m */,
+				E4C12E352390FE390094841D /* FMParse.h */,
+				E4C12E362390FE390094841D /* FMParse.m */,
 			);
 			path = FMHttpRequest;
 			sourceTree = "<group>";
@@ -261,8 +263,6 @@
 				E4C12E332390FE2D0094841D /* FMResponse.m */,
 				88310223239CF9A700C0DF64 /* FMError.h */,
 				88310224239CF9A700C0DF64 /* FMError.m */,
-				E4C12E352390FE390094841D /* FMParse.h */,
-				E4C12E362390FE390094841D /* FMParse.m */,
 				E4C12E382390FE470094841D /* FMHttpManager.h */,
 				E4C12E392390FE470094841D /* FMHttpManager.m */,
 				E4C12E7C2394ADBA0094841D /* FMHttpParseDelegate.h */,

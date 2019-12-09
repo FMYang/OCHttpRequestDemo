@@ -37,8 +37,11 @@
     FMHttpConfig *config = [FMHttpConfig shared];
     config.dataKey = @"result";
     config.plugins = @[[FMHttpLogger class], [FMLoadingPlugin class]];
-    config.parse = [[FMParse alloc] init];
+    config.parse = [[CustomParse alloc] init];
     config.baseURL = @"https://api.apiopen.top";
+    config.publicParams = nil;
+//    config.publicParams = @{@"version": @"2.0"};
+//    config.httpRequestHeaders = @{@"userAgent_t": @"agent"};
     
     CustomRequest *request = [[CustomRequest alloc] initWithPage:1
                                                            count:2

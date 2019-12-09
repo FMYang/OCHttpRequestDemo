@@ -25,6 +25,7 @@ typedef NS_ENUM(NSUInteger, FMRequestSerializerType) {
 
 + (instancetype)shared;
 
+/// 服务器地址
 @property (nonatomic, copy) NSString *baseURL;
 
 /// 数据对应的key，默认为"data"
@@ -43,13 +44,16 @@ typedef NS_ENUM(NSUInteger, FMRequestSerializerType) {
 @property (nonatomic, assign) NSTimeInterval timeoutInterval;
 
 /// 请求头，默认为@{}
-@property (nonatomic, strong) NSDictionary *httpRequestHeaders;
+@property (nonatomic, strong, nullable) NSDictionary *httpRequestHeaders;
+
+/// 公共请求参数
+@property (nonatomic, strong, nullable) NSDictionary *publicParams;
 
 // json转model的解析器
-@property (nonatomic, strong) id<FMHttpParseDelegate> parse;
+@property (nonatomic, strong, nullable) id<FMHttpParseDelegate> parse;
 
 /// 插件
-@property (nonatomic, strong) NSArray<id<FMHttpPluginDelegate>> *plugins;
+@property (nonatomic, strong, nullable) NSArray<id<FMHttpPluginDelegate>> *plugins;
 
 @end
 

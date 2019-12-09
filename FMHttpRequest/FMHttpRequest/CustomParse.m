@@ -15,7 +15,8 @@
     if([keyValues isKindOfClass:[NSDictionary class]]) {
         return [cls yy_modelWithJSON:keyValues];
     } else if([keyValues isKindOfClass:[NSArray class]]) {
-        return [NSArray yy_modelWithJSON:keyValues];
+        id result = [NSArray yy_modelArrayWithClass:cls json:keyValues];
+        return result;
     } else {
         return keyValues;
     }

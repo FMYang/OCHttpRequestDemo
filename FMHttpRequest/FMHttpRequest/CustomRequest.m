@@ -32,8 +32,8 @@
              @"type": _type};
 }
 
-//- (Class)responseClass {
-//    return [VideoModel class];
-//}
-//
+- (Class)responseClass {
+    return [VideoModel class];
+}
+
 @end
