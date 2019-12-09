@@ -651,6 +651,8 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
     delegate.completionHandler = completionHandler;
 
     dataTask.taskDescription = self.taskDescriptionForSessionTasks;
+    
+    // 保存到全局数组mutableTaskDelegatesKeyedByTaskIdentifier中
     [self setDelegate:delegate forTask:dataTask];
 
     delegate.uploadProgressBlock = uploadProgressBlock;
@@ -797,6 +799,7 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
         dataTask = [self.session dataTaskWithRequest:request];
     });
 
+    // 创建AFURLSessionManagerTaskDelegate对象，保存参数
     [self addDelegateForDataTask:dataTask uploadProgress:uploadProgressBlock downloadProgress:downloadProgressBlock completionHandler:completionHandler];
 
     return dataTask;

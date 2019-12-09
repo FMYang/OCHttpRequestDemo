@@ -10,18 +10,18 @@
 
 @implementation FMHttpLogger
 
-+ (void)didReceive:(FMResponse *)response {
-    NSURLRequest *_request = response.orignalrequest;
-    NSHTTPURLResponse *_response = (NSHTTPURLResponse *)response.response;
++ (void)didReceive:(NSURLSessionTask *)task responseObject:(id)responseObject error:(NSError *)error {
+    NSURLRequest *_request = task.originalRequest;
+    NSHTTPURLResponse *_response = (NSHTTPURLResponse *)task.response;
     NSString *httpMethod = _request.HTTPMethod;
     NSString *url = _request.URL.absoluteString;
     NSInteger code = _response.statusCode;
     NSDictionary *httpHeader = _request.allHTTPHeaderFields;
     NSString *params = [[NSString alloc] initWithData:_request.HTTPBody encoding:NSUTF8StringEncoding];
-    NSError *error;
+    NSError *parseError;
     NSData *responseData = nil;
     @try {
-         responseData = [NSJSONSerialization dataWithJSONObject:response.responseObject options:0 error:&error];
+         responseData = [NSJSONSerialization dataWithJSONObject:responseObject options:0 error:&parseError];
     } @catch (NSException *exception) {
         NSLog(@"%@", [exception description]);
     }
@@ -34,7 +34,11 @@
     [output appendFormat:@"method: \n%@\n\r", httpMethod];
     [output appendFormat:@"stateCode: \n%ld\n\r", (long)code];
     [output appendFormat:@"httpHeader: \n%@\n\r", httpHeader];
-    [output appendFormat:@"data: \n%@\n\r", responseString];
+    if(error) {
+        [output appendFormat:@"error: \n%@\n\r", error];
+    } else {
+        [output appendFormat:@"data: \n%@\n\r", responseString];
+    }
     [output appendString:@"====================== END ======================"];
     
     NSLog(@"%@", output);

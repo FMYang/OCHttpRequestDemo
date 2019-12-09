@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy) NSString *message;
 
-@property (nonatomic, strong) NSData *data;
+@property (nonatomic, strong) id data;
 
 + (FMError *)processError:(NSError *)error;
 

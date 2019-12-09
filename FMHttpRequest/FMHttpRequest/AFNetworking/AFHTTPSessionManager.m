@@ -338,10 +338,6 @@
 
 /// 所有AFHTTPSessionManager的请求方法最后调用的方法
 /// 通过调用父类的dataTaskWithRequest方法构造NSURLSessionDataTask
-/*
- 1、序列化请求对象
- 2、通过序列化的request对象，调用父类的方法，创建并返回NSURLSessionDataTask
- */
 - (NSURLSessionDataTask *)dataTaskWithHTTPMethod:(NSString *)method
                                        URLString:(NSString *)URLString
                                       parameters:(id)parameters
@@ -352,6 +348,7 @@
                                          failure:(void (^)(NSURLSessionDataTask *, NSError *))failure
 {
     NSError *serializationError = nil;
+    // 序列化请求对象
     NSMutableURLRequest *request = [self.requestSerializer requestWithMethod:method URLString:[[NSURL URLWithString:URLString relativeToURL:self.baseURL] absoluteString] parameters:parameters error:&serializationError];
     for (NSString *headerField in headers.keyEnumerator) {
         [request addValue:headers[headerField] forHTTPHeaderField:headerField];
@@ -366,6 +363,7 @@
         return nil;
     }
 
+    // 通过序列化的request对象，调用父类的方法，创建并返回NSURLSessionDataTask
     __block NSURLSessionDataTask *dataTask = nil;
     dataTask = [self dataTaskWithRequest:request
                           uploadProgress:uploadProgress

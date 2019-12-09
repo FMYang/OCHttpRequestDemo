@@ -24,7 +24,7 @@
     // Do any additional setup after loading the view.
     
     // https://api.apiopen.top/getJoke?page=1&count=2&type=video （实时段子,神评版本）
-    
+    // https://api.asilu.com/today/ (历史上的今天)
     // 模拟数据
 //    FMRequest *request = [[FMRequest alloc] init];
 //    request.method = FMHttpReuqestMethodPost;
@@ -33,21 +33,24 @@
 //    request.params = @{@"page":@1, @"count":@10, @"type":@"video"};
 //    request.responseClass = [VideoModel class];
     
+    // 设置网络
     FMHttpConfig *config = [FMHttpConfig shared];
     config.dataKey = @"result";
     config.plugins = @[[FMHttpLogger class], [FMLoadingPlugin class]];
     config.parse = [[FMParse alloc] init];
+    config.baseURL = @"https://api.apiopen.top";
     
     CustomRequest *request = [[CustomRequest alloc] initWithPage:1
                                                            count:2
                                                             type:@"video"];
-    [FMHttpManager sendRequest:request
-               completeHandler:^(FMResponse *response) {
-        if(response.state == FMResponseStateSuccess) {
-            NSLog(@"%@", response.data);
-        } else {
-            NSLog(@"%@", response.message);
-        }
+    [FMHttpManager sendRequest:request success:^(FMResponse * _Nonnull response) {
+        NSLog(@"code: %@", response.code);
+        NSLog(@"message: %@", response.message);
+        NSLog(@"data: %@", response.data);
+    } fail:^(FMError * _Nonnull error) {
+        NSLog(@"code: %@", error.code);
+        NSLog(@"message: %@", error.message);
+        NSLog(@"error: %@", error.error);
     }];
 }
 

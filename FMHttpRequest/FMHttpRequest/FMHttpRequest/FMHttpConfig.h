@@ -25,6 +25,8 @@ typedef NS_ENUM(NSUInteger, FMRequestSerializerType) {
 
 + (instancetype)shared;
 
+@property (nonatomic, copy) NSString *baseURL;
+
 /// 数据对应的key，默认为"data"
 @property (nonatomic, copy) NSString *dataKey;
 

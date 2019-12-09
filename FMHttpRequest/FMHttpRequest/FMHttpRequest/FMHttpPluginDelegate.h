@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)willSend;
 
-+ (void)didReceive:(FMResponse *)response;
++ (void)didReceive:(NSURLSessionTask *)task responseObject:(id)responseObject error:(NSError *)error;
 
 @end
 

@@ -18,9 +18,11 @@
                         error:(NSError *)error {
     id parse = [FMHttpConfig shared].parse;
     id result;
-    if(parse) {
+    if(parse && request.responseClass) {
+        // 存在JSON解析器和模型类，解析数据
         result = [parse mapJSON:responseObject cls:request.responseClass];
     } else {
+        // 否则返回原始数据
         result = responseObject;
     }
     FMResponse *fmResponse = [[FMResponse alloc] init];

@@ -24,11 +24,13 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
+        _baseURL = @"";
         _dataKey = @"data";
         _codeKey = @"code";
         _messageKey = @"message";
         _successCode = @"200";
         _timeoutInterval = 30.0;
+        _parse = nil;
         _httpRequestHeaders = @{};
     }
     return self;

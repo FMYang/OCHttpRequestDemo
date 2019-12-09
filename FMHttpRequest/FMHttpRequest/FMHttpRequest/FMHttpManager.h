@@ -11,6 +11,7 @@
 #import "FMRequest.h"
 #import "FMResponse.h"
 #import "FMParse.h"
+#import "FMError.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -26,12 +27,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 发起网络请求
 /// @param request 请求对象
-/// @param complete 请求完成回调
-- (void)sendRequest:(FMRequest *)request
-    completeHandler:(void(^)(FMResponse *response))complete;
-
+/// @param success 成功
+/// @param fail 失败
 + (void)sendRequest:(FMRequest *)request
-completeHandler:(void(^)(FMResponse *response))complete;
+            success:(void(^)(FMResponse *response))success
+               fail:(void (^)(FMError *error))fail;
 
 @end
 

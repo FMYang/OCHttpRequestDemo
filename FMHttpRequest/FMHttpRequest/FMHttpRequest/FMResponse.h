@@ -30,14 +30,14 @@ typedef NS_ENUM(NSUInteger, FMResponseState) {
 /// 响应对象
 @property (nonatomic, strong) NSURLResponse *response;
 
-/// 响应数据
+/// 原始响应数据
 @property (nonatomic, strong) id responseObject;
 
 /// 响应状态码
 @property (nonatomic, assign) FMResponseState state;
 
 /// code
-@property (nonatomic, assign) int code;
+@property (nonatomic, copy) NSString *code;
 
 /// message
 @property (nonatomic, copy) NSString *message;
@@ -45,11 +45,11 @@ typedef NS_ENUM(NSUInteger, FMResponseState) {
 /// data
 @property (nonatomic, strong) id _Nullable data;
 
-/// 包装响应结果
-/// @param response <#response description#>
-/// @param responseObject <#responseObject description#>
-/// @param request <#request description#>
-/// @param error <#error description#>
+/// 处理响应结果
+/// @param response 响应对象
+/// @param responseObject 响应数据
+/// @param request 请求对象
+/// @param error 错误
 + (FMResponse *)processResult:(NSURLResponse *)response
                responseObject:(id)responseObject
                       request:(FMRequest *)request

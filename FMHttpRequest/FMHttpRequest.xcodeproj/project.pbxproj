@@ -406,7 +406,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 1120;
-				ORGANIZATIONNAME = "fm y";
+				ORGANIZATIONNAME = com.yfm.network;
 				TargetAttributes = {
 					E4C12DF52390FDF40094841D = {
 						CreatedOnToolsVersion = 11.2.1;

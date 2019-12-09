@@ -22,10 +22,6 @@
     return self;
 }
 
-- (NSString *)baseUrl {
-    return @"https://api.apiopen.top";
-}
-
 - (NSString *)path {
     return @"/getJoke";
 }
@@ -36,8 +32,8 @@
              @"type": _type};
 }
 
-- (Class)responseClass {
-    return [VideoModel class];
-}
-
+//- (Class)responseClass {
+//    return [VideoModel class];
+//}
+//
 @end
