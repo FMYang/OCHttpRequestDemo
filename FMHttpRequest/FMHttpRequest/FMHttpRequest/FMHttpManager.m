@@ -181,11 +181,7 @@
     NSDictionary *publicParams = [FMHttpConfig shared].publicParams;
     if(!publicParams || publicParams.allKeys.count == 0) { return params; }
     NSMutableDictionary *newParams = [params mutableCopy];
-    [publicParams enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
-        if(key && obj) {
-            [newParams setValue:obj forKey:key];
-        }
-    }];
+    [newParams addEntriesFromDictionary:publicParams];
     return newParams;
 }
 

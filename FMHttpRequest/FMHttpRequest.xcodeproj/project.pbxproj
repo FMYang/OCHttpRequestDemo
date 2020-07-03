@@ -72,6 +72,7 @@
 		88310227239CFBB900C0DF64 /* FMHttpPluginDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FMHttpPluginDelegate.h; sourceTree = "<group>"; };
 		8879CC9C239D54500080CAF3 /* FMLoadingPlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FMLoadingPlugin.h; sourceTree = "<group>"; };
 		8879CC9D239D54500080CAF3 /* FMLoadingPlugin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FMLoadingPlugin.m; sourceTree = "<group>"; };
+		E43EF1DA24AF3FD000F13CAB /* FMRequestProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FMRequestProtocol.h; sourceTree = "<group>"; };
 		E4C12DF62390FDF40094841D /* FMHttpRequest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FMHttpRequest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4C12DF92390FDF40094841D /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		E4C12DFA2390FDF40094841D /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -254,21 +255,22 @@
 		E4C12E2E2390FDFF0094841D /* FMHttpRequest */ = {
 			isa = PBXGroup;
 			children = (
-				E4C12E532394A13C0094841D /* FMHttpHeader.h */,
+				88310223239CF9A700C0DF64 /* FMError.h */,
+				88310224239CF9A700C0DF64 /* FMError.m */,
 				E4C12E3B2390FF450094841D /* FMHttpConfig.h */,
 				E4C12E3C2390FF450094841D /* FMHttpConfig.m */,
+				E4C12E532394A13C0094841D /* FMHttpHeader.h */,
+				E4C12E8C2394E79B0094841D /* FMHttpLogger.h */,
+				E4C12E8D2394E79B0094841D /* FMHttpLogger.m */,
+				E4C12E382390FE470094841D /* FMHttpManager.h */,
+				E4C12E392390FE470094841D /* FMHttpManager.m */,
+				E4C12E7C2394ADBA0094841D /* FMHttpParseDelegate.h */,
+				88310227239CFBB900C0DF64 /* FMHttpPluginDelegate.h */,
 				E4C12E2F2390FE260094841D /* FMRequest.h */,
 				E4C12E302390FE260094841D /* FMRequest.m */,
 				E4C12E322390FE2D0094841D /* FMResponse.h */,
 				E4C12E332390FE2D0094841D /* FMResponse.m */,
-				88310223239CF9A700C0DF64 /* FMError.h */,
-				88310224239CF9A700C0DF64 /* FMError.m */,
-				E4C12E382390FE470094841D /* FMHttpManager.h */,
-				E4C12E392390FE470094841D /* FMHttpManager.m */,
-				E4C12E7C2394ADBA0094841D /* FMHttpParseDelegate.h */,
-				E4C12E8C2394E79B0094841D /* FMHttpLogger.h */,
-				E4C12E8D2394E79B0094841D /* FMHttpLogger.m */,
-				88310227239CFBB900C0DF64 /* FMHttpPluginDelegate.h */,
+				E43EF1DA24AF3FD000F13CAB /* FMRequestProtocol.h */,
 			);
 			path = FMHttpRequest;
 			sourceTree = "<group>";

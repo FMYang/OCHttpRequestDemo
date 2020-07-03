@@ -43,9 +43,29 @@
 //    config.publicParams = @{@"version": @"2.0"};
 //    config.httpRequestHeaders = @{@"userAgent_t": @"agent"};
     
-    CustomRequest *request = [[CustomRequest alloc] initWithPage:1
-                                                           count:2
-                                                            type:@"video"];
+    NSDictionary *params = @{@"page": @(1),
+                             @"count": @(2),
+                             @"type": @"video"};
+
+    
+    // 1、直接用
+//    FMRequest *request = [[FMRequest alloc] init];
+//    request.path = @"/getJoke";
+//    request.method = FMHttpReuqestMethodPost;
+//    request.params = params;
+    
+    // 2、缺点：需要继承，个人不喜欢
+//    CustomRequest *request = [[CustomRequest alloc] initWithPage:1
+//                                                           count:2
+//                                                            type:@"video"];
+    
+    
+//    // 3、缺点，没有Xcode补全，换行也蛋疼
+    FMRequest *request = FMRequest.build()
+                    .reqUrl(@"/getJoke")
+                    .reqMethod(FMHttpReuqestMethodPost)
+                    .reqParams(params);
+            
     [FMHttpManager sendRequest:request success:^(FMResponse * _Nonnull response) {
         NSLog(@"code: %@", response.code);
         NSLog(@"message: %@", response.message);

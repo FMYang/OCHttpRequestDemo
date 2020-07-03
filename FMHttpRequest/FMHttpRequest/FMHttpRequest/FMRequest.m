@@ -15,25 +15,25 @@
 
 @implementation FMRequest
 
-- (FMHttpReuqestMethod)method {
-    return FMHttpReuqestMethodPost;
-}
+//- (FMHttpReuqestMethod)method {
+//    return FMHttpReuqestMethodPost;
+//}
+//
+//- (NSString *)baseUrl {
+//    return @"";
+//}
+//
+//- (NSDictionary *)params {
+//    return @{};
+//}
 
-- (NSString *)baseUrl {
-    return @"";
-}
-
-- (NSDictionary *)params {
-    return @{};
-}
-
-- (NSString *)path {
-    return @"";
-}
-
-- (NSTimeInterval)timeoutInterval {
-    return 0;
-}
+//- (NSString *)path {
+//    return @"";
+//}
+//
+//- (NSTimeInterval)timeoutInterval {
+//    return 0;
+//}
 
 #pragma mark -
 - (NSString *)requestMethod {
@@ -59,4 +59,36 @@
     }
 }
 
+#pragma mark -
++ (FMRequest * _Nonnull (^)(void))build {
+    return ^ {
+        return [[self alloc] init];
+    };
+}
+
+- (FMRequest * _Nonnull (^)(NSString * _Nullable))reqUrl {
+    return ^FMRequest *(NSString *url) {
+        self.path = url;
+        return self;
+    };
+}
+
+- (FMRequest * _Nonnull (^)(FMHttpReuqestMethod))reqMethod {
+    return ^FMRequest *(FMHttpReuqestMethod method) {
+        self.method = method;
+        return self;
+    };
+}
+
+- (FMRequest * _Nonnull (^)(NSDictionary * _Nullable))reqParams {
+    return ^ (NSDictionary *params){
+        self.params = params;
+        return self;
+    };
+}
+
+#pragma mark -
+- (NSString *)description {
+    return [NSString stringWithFormat:@"url = %@, method = %ld, params = %@", self.baseUrl, self.method, self.params];
+}
 @end

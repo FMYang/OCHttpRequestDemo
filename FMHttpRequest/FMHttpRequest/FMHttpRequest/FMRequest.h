@@ -49,6 +49,14 @@ typedef NS_ENUM(NSUInteger, FMHttpReuqestMethod) {
 /// 请求方法字符串，请求序列化的时候用到
 - (NSString *)requestMethod;
 
+#pragma mark - 链式函数
+
++ (FMRequest * (^)(void))build;
+- (FMRequest * (^)(FMHttpReuqestMethod))reqMethod;
+- (FMRequest * (^)(NSString * _Nullable))reqBaseUrl;
+- (FMRequest * (^)(NSString * _Nullable))reqUrl;
+- (FMRequest * (^)(NSDictionary * _Nullable))reqParams;
+
 @end
 
 NS_ASSUME_NONNULL_END
