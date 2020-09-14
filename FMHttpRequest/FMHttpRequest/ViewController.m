@@ -7,12 +7,13 @@
 //
 
 #import "ViewController.h"
-#import "FMHttpHeader.h"
 #import "User.h"
 #import "CustomParse.h"
 #import "VideoModel.h"
 #import "CustomRequest.h"
 #import "FMLoadingPlugin.h"
+#import "FMHttpHeader.h"
+
 @interface ViewController ()
 
 @end
@@ -40,8 +41,8 @@
     config.parse = [[CustomParse alloc] init];
     config.baseURL = @"https://api.apiopen.top";
     config.publicParams = nil;
-//    config.publicParams = @{@"version": @"2.0"};
-//    config.httpRequestHeaders = @{@"userAgent_t": @"agent"};
+    config.publicParams = @{@"version": @"2.0"};
+    config.httpRequestHeaders = @{@"userAgent_t": @"agent"};
     
     NSDictionary *params = @{@"page": @(1),
                              @"count": @(2),
@@ -62,18 +63,18 @@
     
 //    // 3、缺点，没有Xcode补全，换行也蛋疼
     FMRequest *request = FMRequest.build()
-                    .reqUrl(@"/getJoke")
-                    .reqMethod(FMHttpReuqestMethodPost)
-                    .reqParams(params);
+                                .reqUrl(@"/getJoke")
+                                .reqMethod(FMHttpReuqestMethodPost)
+                                .reqParams(params);
             
     [FMHttpManager sendRequest:request success:^(FMResponse * _Nonnull response) {
-        NSLog(@"code: %@", response.code);
-        NSLog(@"message: %@", response.message);
-        NSLog(@"data: %@", response.data);
+//        NSLog(@"code: %@", response.code);
+//        NSLog(@"message: %@", response.message);
+//        NSLog(@"data: %@", response.data);
     } fail:^(FMError * _Nonnull error) {
-        NSLog(@"code: %@", error.code);
-        NSLog(@"message: %@", error.message);
-        NSLog(@"error: %@", error.error);
+//        NSLog(@"code: %@", error.code);
+//        NSLog(@"message: %@", error.message);
+//        NSLog(@"error: %@", error.error);
     }];
 }
 

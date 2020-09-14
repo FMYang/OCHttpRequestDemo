@@ -15,6 +15,13 @@
 
 @implementation FMRequest
 
+- (instancetype)init {
+    if(self = [super init]) {
+        _method = FMHttpReuqestMethodPost;
+    }
+    return self;
+}
+
 //- (FMHttpReuqestMethod)method {
 //    return FMHttpReuqestMethodPost;
 //}
@@ -26,7 +33,7 @@
 //- (NSDictionary *)params {
 //    return @{};
 //}
-
+//
 //- (NSString *)path {
 //    return @"";
 //}
@@ -66,6 +73,13 @@
     };
 }
 
+- (FMRequest * _Nonnull (^)(NSString * _Nullable))reqBaseUrl {
+    return ^FMRequest *(NSString *url) {
+        self.baseUrl = url;
+        return self;
+    };
+}
+
 - (FMRequest * _Nonnull (^)(NSString * _Nullable))reqUrl {
     return ^FMRequest *(NSString *url) {
         self.path = url;
@@ -89,6 +103,6 @@
 
 #pragma mark -
 - (NSString *)description {
-    return [NSString stringWithFormat:@"url = %@, method = %ld, params = %@", self.baseUrl, self.method, self.params];
+    return [NSString stringWithFormat:@"url = %@, method = %lu, params = %@", self.baseUrl, (unsigned long)self.method, self.params];
 }
 @end
