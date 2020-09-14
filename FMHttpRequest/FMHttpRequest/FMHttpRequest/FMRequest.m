@@ -101,6 +101,20 @@
     };
 }
 
+- (FMRequest * _Nonnull (^)(__unsafe_unretained Class _Nullable))resultClass {
+    return ^ (Class class) {
+        self.responseClass = class;
+        return self;
+    };
+}
+
+- (FMRequest * _Nonnull (^)(NSData * _Nullable))resSampleData {
+    return ^ (NSData *data) {
+        self.sampleData = data;
+        return self;
+    };
+}
+
 #pragma mark -
 - (NSString *)description {
     return [NSString stringWithFormat:@"url = %@, method = %lu, params = %@", self.baseUrl, (unsigned long)self.method, self.params];

@@ -38,20 +38,20 @@
 }
 
 + (void)sendRequest:(FMRequest *)request
-            success:(void (^)(FMResponse * _Nonnull))success
-               fail:(void (^)(FMError * _Nonnull))fail {
+            success:(FMSuccessBlock(id))success
+               fail:(FMFailBlock)fail {
     [[self shared] sendRequest:request success:success fail:fail];
 }
 
 - (void)sendRequest:(FMRequest *)request
-            success:(void (^)(FMResponse * _Nonnull))success
-               fail:(void (^)(FMError * _Nonnull))fail {
+            success:(FMSuccessBlock(id))success
+               fail:(FMFailBlock)fail {
     [self dataTaskWithRequest:request success:success fail:fail];
 }
 
 - (void)dataTaskWithRequest:(FMRequest *)request
-                    success:(void (^)(FMResponse * _Nonnull))success
-                       fail:(void (^)(FMError * _Nonnull))fail {
+                    success:(FMSuccessBlock(id))success
+                       fail:(FMFailBlock)fail {
     NSMutableURLRequest *urlRequest = [self serializerRequest:request];
     // 优先使用FMRequest设置的超时时间，如果未设置，则使用配置项的
     if(request.timeoutInterval > 0) {
@@ -68,65 +68,30 @@
         }
     }];
     
+    // mock数据处理
+    if(request.sampleData) {
+        FMResponse *fmResponse = [self requestCompletaion:request success:success fail:fail];
+        // 插件didReceive方法
+        NSArray<id<FMHttpPluginDelegate>> *plugins = [[FMHttpConfig shared] plugins];
+        [plugins enumerateObjectsUsingBlock:^(id<FMHttpPluginDelegate>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if([obj respondsToSelector:@selector(didReceive:responseObject:error:)]) {
+                [obj didReceive:nil responseObject:request.sampleData error:nil];
+            }
+        }];
+        
+        return;
+    }
+    
     __block NSURLSessionDataTask *task = nil;
     task = [self.manager dataTaskWithRequest:urlRequest
                        uploadProgress:nil
                      downloadProgress:nil
                     completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
-        /*
-         responseObject应该遵送restAPi规范，与服务端约定好格式{"code":0, "message":"", "data":{}}
-         */
-        NSString *codeKey = [FMHttpConfig shared].codeKey;
-        NSString *messageKey = [FMHttpConfig shared].messageKey;
-        NSString *dataKey = [FMHttpConfig shared].dataKey;
-        NSString *successCode = [FMHttpConfig shared].successCode;
         
-        // 业务状态码NSString类型接收
-        NSString *responseCode = @"";
-        if([responseObject[codeKey] isKindOfClass:[NSString class]]) {
-            responseCode = responseObject[codeKey];
-        } else if([responseObject[codeKey] isKindOfClass:[NSNumber class]]) {
-            responseCode = [NSString stringWithFormat:@"%ld", [responseObject[codeKey] integerValue]];
-        }
-        NSString *message = responseObject[messageKey];
-        id data = responseObject[dataKey];
-
-        FMResponse *fmResponse = nil;
-        FMError *fmError = nil;
-
-        if(error) {
-            // http请求失败处理
-            fmError = [FMError processError:error];
-            fmError.code = responseCode;
-            fmError.message = message;
-            fmError.data = data;
-            fail(fmError);
-        } else {
-            // http请求成功，业务逻辑处理
-            // 业务请求成功，响应的code与服务的成功状态码对比
-            BOOL bussinessSuccess = NO;
-            if([responseCode isEqualToString:successCode]) {
-                bussinessSuccess = YES;
-            }
-            
-            if(bussinessSuccess) {
-                fmResponse = [FMResponse processResult:response responseObject:data request:request error:error];
-                fmResponse.code = responseCode;
-                fmResponse.message = message;
-                success(fmResponse);
-            } else {
-                // 业务失败处理，走错误回调
-                fmError = [FMError processError:error];
-                fmError.code = responseCode;
-                fmError.message = message;
-                fmError.data = data;
-                fail(fmError);
-            }
-        }
-        
+        [self process:responseObject success:success fail:fail error:error response:response request:request];
         // 插件didReceive方法
         NSArray *plugins = [[FMHttpConfig shared] plugins];
-        [plugins enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [plugins enumerateObjectsUsingBlock:^(id<FMHttpPluginDelegate>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if([obj respondsToSelector:@selector(didReceive:responseObject:error:)]) {
                 [obj didReceive:task responseObject:responseObject error:error];
             }
@@ -183,6 +148,78 @@
     NSMutableDictionary *newParams = [params mutableCopy];
     [newParams addEntriesFromDictionary:publicParams];
     return newParams;
+}
+
+// 处理mock数据
+- (FMResponse *)requestCompletaion:(FMRequest *)request success:(FMSuccessBlock(id))success fail:(FMFailBlock)fail {
+    id responseObject = request.sampleData;
+    NSError *error;
+    if(responseObject) {
+        return [self process:responseObject success:success fail:fail error:nil response:nil request:request];
+    } else {
+        FMError *fmError = [FMError processError:error];
+        fmError.code = @"-1";
+        fmError.message = @"数据错误";
+        fmError.data = responseObject;
+        fail(fmError);
+    }
+    return nil;
+}
+
+// 处理回调数据
+- (FMResponse *)process:(id)responseObject success:(FMSuccessBlock(id))success fail:(FMFailBlock)fail error:(NSError *)error response:(NSURLResponse *)response request:(FMRequest *)request {
+    /*
+     responseObject应该遵送restAPi规范，与服务端约定好格式{"code":0, "message":"", "data":{}}
+     */
+    NSString *codeKey = [FMHttpConfig shared].codeKey;
+    NSString *messageKey = [FMHttpConfig shared].messageKey;
+    NSString *dataKey = [FMHttpConfig shared].dataKey;
+    NSString *successCode = [FMHttpConfig shared].successCode;
+    
+    // 业务状态码NSString类型接收
+    NSString *responseCode = @"";
+    if([responseObject[codeKey] isKindOfClass:[NSString class]]) {
+        responseCode = responseObject[codeKey];
+    } else if([responseObject[codeKey] isKindOfClass:[NSNumber class]]) {
+        responseCode = [NSString stringWithFormat:@"%ld", (long)[responseObject[codeKey] integerValue]];
+    }
+    NSString *message = responseObject[messageKey];
+    id data = responseObject[dataKey];
+
+    FMResponse *fmResponse = nil;
+    FMError *fmError = nil;
+
+    if(error) {
+        // http请求失败处理
+        fmError = [FMError processError:error];
+        fmError.code = responseCode;
+        fmError.message = message;
+        fmError.data = data;
+        fail(fmError);
+    } else {
+        // http请求成功，业务逻辑处理
+        // 业务请求成功，响应的code与服务的成功状态码对比
+        BOOL bussinessSuccess = NO;
+        if([responseCode isEqualToString:successCode]) {
+            bussinessSuccess = YES;
+        }
+        
+        if(bussinessSuccess) {
+            fmResponse = [FMResponse processResult:response responseObject:data request:request error:error];
+            fmResponse.code = responseCode;
+            fmResponse.message = message;
+            success(fmResponse.data, fmResponse);
+        } else {
+            // 业务失败处理，走错误回调
+            fmError = [FMError processError:error];
+            fmError.code = responseCode;
+            fmError.message = message;
+            fmError.data = data;
+            fail(fmError);
+        }
+    }
+    
+    return fmResponse;
 }
 
 // 结果校验

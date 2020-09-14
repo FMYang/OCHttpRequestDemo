@@ -24,6 +24,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    [self readJson:@"Video"];
+    
     // https://api.apiopen.top/getJoke?page=1&count=2&type=video （实时段子,神评版本）
     // https://api.asilu.com/today/ (历史上的今天)
     // 模拟数据
@@ -62,21 +64,52 @@
     
     
 //    // 3、缺点，没有Xcode补全，换行也蛋疼
-    FMRequest *request = FMRequest.build()
-                                .reqUrl(@"/getJoke")
-                                .reqMethod(FMHttpReuqestMethodPost)
-                                .reqParams(params);
-            
-    [FMHttpManager sendRequest:request success:^(FMResponse * _Nonnull response) {
-//        NSLog(@"code: %@", response.code);
-//        NSLog(@"message: %@", response.message);
-//        NSLog(@"data: %@", response.data);
+//    FMRequest *request = FMRequest.build()
+//                                .reqUrl(@"/getJoke")
+//                                .reqMethod(FMHttpReuqestMethodPost)
+//                                .reqParams(params);
+//
+//    [FMHttpManager sendRequest:request success:^(FMResponse * _Nonnull response) {
+////        NSLog(@"code: %@", response.code);
+////        NSLog(@"message: %@", response.message);
+////        NSLog(@"data: %@", response.data);
+//    } fail:^(FMError * _Nonnull error) {
+////        NSLog(@"code: %@", error.code);
+////        NSLog(@"message: %@", error.message);
+////        NSLog(@"error: %@", error.error);
+//    }];
+    
+    [self fetchList:^(NSArray<VideoModel *> *result, FMResponse *response) {
+        
     } fail:^(FMError * _Nonnull error) {
-//        NSLog(@"code: %@", error.code);
-//        NSLog(@"message: %@", error.message);
-//        NSLog(@"error: %@", error.error);
+        
     }];
 }
 
+- (void)fetchList:(FMSuccessBlock(NSArray<VideoModel *> *))success fail:(FMFailBlock)fail {
+    NSDictionary *params = @{@"page": @(1),
+                             @"count": @(10),
+                             @"type": @"video"};
+    
+    FMRequest *request = FMRequest.build()
+    .reqUrl(@"/getJoke")
+    .reqMethod(FMHttpReuqestMethodPost)
+    .reqParams(params)
+    .resultClass(VideoModel.class)
+    .resSampleData([self readJson:@"Video"]);
+    
+    [FMHttpManager sendRequest:request success:success fail:fail];
+}
+
+- (id)readJson:(NSString *)name {
+    NSString *path = [[NSBundle mainBundle] pathForResource:name ofType:@"json"];
+    NSData *data = [NSData dataWithContentsOfFile:path];
+    NSError *error;
+    id object = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
+    if([NSJSONSerialization isValidJSONObject:object]) {
+        return object;
+    }
+    return nil;
+}
 
 @end

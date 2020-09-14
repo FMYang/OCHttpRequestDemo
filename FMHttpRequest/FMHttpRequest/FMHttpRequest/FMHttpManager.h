@@ -16,6 +16,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#define FMSuccessBlock(type) void (^)(type result, FMResponse *response)
+
+typedef void(^FMFailBlock)(FMError *error);
+
 @interface FMHttpManager : NSObject
 
 @property (nonatomic, strong, readonly) AFURLSessionManager *manager;
@@ -31,8 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param success 成功
 /// @param fail 失败
 + (void)sendRequest:(FMRequest *)request
-            success:(void(^)(FMResponse *response))success
-               fail:(void (^)(FMError *error))fail;
+            success:(FMSuccessBlock(id))success
+               fail:(FMFailBlock)fail;
 
 @end
 

@@ -14,7 +14,7 @@
     NSLog(@"=========== start loading ===========");
 }
 
-+ (void)didReceive:(FMResponse *)response {
++ (void)didReceive:(NSURLSessionTask *)task responseObject:(id)responseObject error:(NSError *)error {
     NSLog(@"=========== end loading ===========");
 }
 

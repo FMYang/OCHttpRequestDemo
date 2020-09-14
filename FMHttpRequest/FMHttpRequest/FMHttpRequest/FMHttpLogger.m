@@ -10,7 +10,7 @@
 
 @implementation FMHttpLogger
 
-+ (void)didReceive:(NSURLSessionTask *)task responseObject:(id)responseObject error:(NSError *)error {
++ (void)didReceive:(nullable NSURLSessionTask *)task responseObject:(id)responseObject error:(NSError *)error {
     NSURLRequest *_request = task.originalRequest;
     NSHTTPURLResponse *_response = (NSHTTPURLResponse *)task.response;
     NSString *httpMethod = _request.HTTPMethod;

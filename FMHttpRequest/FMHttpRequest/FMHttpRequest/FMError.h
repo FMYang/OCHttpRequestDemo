@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSUInteger, FMErrorReason) {
+typedef NS_ENUM(NSInteger, FMErrorReason) {
     /// 没有网络
     FMErrorReasonNetworkLost,
     /// 服务器返回的数据为nil

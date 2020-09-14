@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		88310225239CF9A700C0DF64 /* FMError.m in Sources */ = {isa = PBXBuildFile; fileRef = 88310224239CF9A700C0DF64 /* FMError.m */; };
 		8879CC9E239D54500080CAF3 /* FMLoadingPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 8879CC9D239D54500080CAF3 /* FMLoadingPlugin.m */; };
+		E42AF46A250F55CA003D4762 /* Video.json in Resources */ = {isa = PBXBuildFile; fileRef = E42AF469250F55CA003D4762 /* Video.json */; };
 		E4C12DFB2390FDF40094841D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E4C12DFA2390FDF40094841D /* AppDelegate.m */; };
 		E4C12DFE2390FDF40094841D /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E4C12DFD2390FDF40094841D /* SceneDelegate.m */; };
 		E4C12E012390FDF40094841D /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E4C12E002390FDF40094841D /* ViewController.m */; };
@@ -72,6 +73,7 @@
 		88310227239CFBB900C0DF64 /* FMHttpPluginDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FMHttpPluginDelegate.h; sourceTree = "<group>"; };
 		8879CC9C239D54500080CAF3 /* FMLoadingPlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FMLoadingPlugin.h; sourceTree = "<group>"; };
 		8879CC9D239D54500080CAF3 /* FMLoadingPlugin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FMLoadingPlugin.m; sourceTree = "<group>"; };
+		E42AF469250F55CA003D4762 /* Video.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Video.json; sourceTree = "<group>"; };
 		E43EF1DA24AF3FD000F13CAB /* FMRequestProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FMRequestProtocol.h; sourceTree = "<group>"; };
 		E4C12DF62390FDF40094841D /* FMHttpRequest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FMHttpRequest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4C12DF92390FDF40094841D /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -230,6 +232,7 @@
 				8879CC9D239D54500080CAF3 /* FMLoadingPlugin.m */,
 				E4C12E352390FE390094841D /* FMParse.h */,
 				E4C12E362390FE390094841D /* FMParse.m */,
+				E42AF469250F55CA003D4762 /* Video.json */,
 			);
 			path = FMHttpRequest;
 			sourceTree = "<group>";
@@ -449,6 +452,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E4C12E092390FDFB0094841D /* LaunchScreen.storyboard in Resources */,
+				E42AF46A250F55CA003D4762 /* Video.json in Resources */,
 				E4C12E062390FDFB0094841D /* Assets.xcassets in Resources */,
 				E4C12E042390FDF40094841D /* Main.storyboard in Resources */,
 			);
