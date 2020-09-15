@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)willSend;
 
-+ (void)didReceive:(nullable NSURLSessionTask *)task responseObject:(id)responseObject error:(nullable NSError *)error;
++ (void)didReceive:(nullable NSURLSessionTask *)task responseObject:(FMResponse *)response error:(nullable NSError *)error;
 
 @end
 

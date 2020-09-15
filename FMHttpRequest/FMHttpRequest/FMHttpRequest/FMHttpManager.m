@@ -75,7 +75,8 @@
         NSArray<id<FMHttpPluginDelegate>> *plugins = [[FMHttpConfig shared] plugins];
         [plugins enumerateObjectsUsingBlock:^(id<FMHttpPluginDelegate>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if([obj respondsToSelector:@selector(didReceive:responseObject:error:)]) {
-                [obj didReceive:nil responseObject:request.sampleData error:nil];
+                NSURLSessionTask *task = [self.manager.session dataTaskWithRequest:urlRequest];
+                [obj didReceive:task responseObject:fmResponse error:nil];
             }
         }];
         
@@ -88,12 +89,12 @@
                      downloadProgress:nil
                     completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
         
-        [self process:responseObject success:success fail:fail error:error response:response request:request];
+        FMResponse *fmResponse = [self process:responseObject success:success fail:fail error:error response:response request:request];
         // 插件didReceive方法
         NSArray *plugins = [[FMHttpConfig shared] plugins];
         [plugins enumerateObjectsUsingBlock:^(id<FMHttpPluginDelegate>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if([obj respondsToSelector:@selector(didReceive:responseObject:error:)]) {
-                [obj didReceive:task responseObject:responseObject error:error];
+                [obj didReceive:task responseObject:fmResponse error:error];
             }
         }];
     }];

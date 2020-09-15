@@ -10,16 +10,17 @@
 
 @implementation FMHttpLogger
 
-+ (void)didReceive:(nullable NSURLSessionTask *)task responseObject:(id)responseObject error:(NSError *)error {
++ (void)didReceive:(nullable NSURLSessionTask *)task responseObject:(FMResponse *)response error:(NSError *)error {
     NSURLRequest *_request = task.originalRequest;
     NSHTTPURLResponse *_response = (NSHTTPURLResponse *)task.response;
     NSString *httpMethod = _request.HTTPMethod;
     NSString *url = _request.URL.absoluteString;
-    NSInteger code = _response.statusCode;
+    NSInteger code = (response.request.sampleData != nil) ? 200 : _response.statusCode;
     NSDictionary *httpHeader = _request.allHTTPHeaderFields;
     NSString *params = [[NSString alloc] initWithData:_request.HTTPBody encoding:NSUTF8StringEncoding];
     NSError *parseError;
     NSData *responseData = nil;
+    id responseObject = response.responseObject;
     @try {
          responseData = [NSJSONSerialization dataWithJSONObject:responseObject options:0 error:&parseError];
     } @catch (NSException *exception) {

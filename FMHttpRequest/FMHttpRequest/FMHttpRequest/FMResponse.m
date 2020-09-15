@@ -7,7 +7,6 @@
 //
 
 #import "FMResponse.h"
-#import "FMRequest.h"
 #import "FMHttpConfig.h"
 
 @implementation FMResponse
