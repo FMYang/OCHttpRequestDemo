@@ -10,7 +10,7 @@
 
 @implementation FMLoadingPlugin
 
-+ (void)willSend {
++ (void)willSend:(FMRequest *)request {
     NSLog(@"=========== start loading ===========");
 }
 

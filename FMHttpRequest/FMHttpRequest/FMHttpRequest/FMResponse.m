@@ -29,7 +29,6 @@
     fmResponse.data = result;
     fmResponse.response = response;
     fmResponse.responseObject = responseObject;
-    fmResponse.orignalrequest = request.request;
     return fmResponse;
 }
 

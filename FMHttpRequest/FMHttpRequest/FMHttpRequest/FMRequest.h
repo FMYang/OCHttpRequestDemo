@@ -10,6 +10,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSUInteger, FMRequestDataFormat) {
+    /// 默认格式
+    FMRequestDataFormatDefault,
+    /// 使用HTTP格式序列化请求参数 i=1&j=1
+    FMRequestDataFormatHTTP,
+    /// 使用JSON格式序列化请求参数 {"i": 1, "j": 1}
+    FMRequestDataFormatJSON,
+    /// 使用PropertyList格式序列化请求参数，plist
+    FMRequestDataFormatPlist
+};
+
 typedef NS_ENUM(NSUInteger, FMHttpReuqestMethod) {
     FMHttpReuqestMethodGet,
     FMHttpReuqestMethodPost,
@@ -20,10 +31,13 @@ typedef NS_ENUM(NSUInteger, FMHttpReuqestMethod) {
 @interface FMRequest : NSObject
 
 /// 最终请求对象
-@property (nonatomic, strong) NSMutableURLRequest *request;
+@property (nonatomic, strong) NSMutableURLRequest *orignalRequest;
 
 /// http请求方法
 @property (nonatomic, assign) FMHttpReuqestMethod method;
+
+/// 序列化类型
+@property (nonatomic, assign) FMRequestDataFormat dataFormat;
 
 /// 请求url
 @property (nonatomic, copy) NSString *path;
@@ -39,9 +53,6 @@ typedef NS_ENUM(NSUInteger, FMHttpReuqestMethod) {
 
 /// 请求头
 @property (nonatomic, strong) NSDictionary *httpHeader;
-
-/// 公共参数
-@property (nonatomic, strong) NSDictionary *publicParams;
 
 /// 响应模型类，网络请求的JSON转成哪个模型
 @property (nonatomic, assign) Class responseClass;
@@ -59,8 +70,10 @@ typedef NS_ENUM(NSUInteger, FMHttpReuqestMethod) {
 - (FMRequest * (^)(NSString * _Nullable))reqBaseUrl;
 - (FMRequest * (^)(NSString * _Nullable))reqUrl;
 - (FMRequest * (^)(NSDictionary * _Nullable))reqParams;
+- (FMRequest * (^)(NSDictionary * _Nullable))reqHttpHeader;
 - (FMRequest * (^)(Class _Nullable))resultClass;
 - (FMRequest * (^)(NSData * _Nullable))resSampleData;
+- (FMRequest * (^)(FMRequestDataFormat))reqDataFormat;
 
 @end
 

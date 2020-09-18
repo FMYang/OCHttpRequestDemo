@@ -60,11 +60,13 @@
         urlRequest.timeoutInterval = [FMHttpConfig shared].timeoutInterval;
     }
     
+    request.orignalRequest = urlRequest;
+    
     // 插件willSend方法
     NSArray *plugins = [[FMHttpConfig shared] plugins];
     [plugins enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if([obj respondsToSelector:@selector(willSend)]) {
-            [obj willSend];
+        if([obj respondsToSelector:@selector(willSend:)]) {
+            [obj willSend:request];
         }
     }];
     
@@ -88,7 +90,6 @@
                        uploadProgress:nil
                      downloadProgress:nil
                     completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
-        
         FMResponse *fmResponse = [self process:responseObject success:success fail:fail error:error response:response request:request];
         // 插件didReceive方法
         NSArray *plugins = [[FMHttpConfig shared] plugins];
@@ -104,7 +105,6 @@
 // 请求参数序列化 FMRequest -> NSURLRequest
 // 构造请求对象
 - (NSMutableURLRequest *)serializerRequest:(FMRequest *)request {
-    AFHTTPRequestSerializer *serialize = [AFHTTPRequestSerializer serializer];
     NSError *serializationError = nil;
     
     NSURL *baseURL;
@@ -120,26 +120,40 @@
     // 添加公共请求参数
     NSDictionary *params = [self addPublicParams:request.params];
     
+    // 构造请求对象
     NSString *requestUrl = [[NSURL URLWithString:request.path relativeToURL:baseURL] absoluteString];
-    NSMutableURLRequest *urlRequest = [serialize requestWithMethod:[request requestMethod]
+    NSMutableURLRequest *urlRequest = [[self requestSerializer:request] requestWithMethod:[request requestMethod]
                                                          URLString:requestUrl
                                                         parameters:params error:&serializationError];
 
     /// 添加请求头
-    [self addHttpHeader:urlRequest];
+    [self addHttpHeader:urlRequest fmRequest:request];
     
     return urlRequest;
 }
 
 /// 添加请求头
-- (void)addHttpHeader:(NSMutableURLRequest *)request {
-    NSDictionary *httpReqeustHeader = [FMHttpConfig shared].httpRequestHeaders;
-    if(!httpReqeustHeader || httpReqeustHeader.allKeys.count == 0) { return; }
-    [httpReqeustHeader enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
-        if(key && obj) {
-            [request setValue:obj forHTTPHeaderField:key];
-        }
-    }];
+- (void)addHttpHeader:(NSMutableURLRequest *)request fmRequest:(FMRequest *)fmRequest {
+    NSDictionary *publicReqeustHeader = [FMHttpConfig shared].publicRequestHeaders;
+    NSDictionary *requestHttpHeader = fmRequest.httpHeader;
+    
+    // 添加公共请求头
+    if(publicReqeustHeader && publicReqeustHeader.allValues.count > 0) {
+        [publicReqeustHeader enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+            if(key && obj) {
+                [request setValue:obj forHTTPHeaderField:key];
+            }
+        }];
+    }
+    
+    // 添加特定的请求头
+    if(requestHttpHeader && requestHttpHeader.allValues.count > 0) {
+        [requestHttpHeader enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+            if(key && obj) {
+                [request setValue:obj forHTTPHeaderField:key];
+            }
+        }];
+    }
 }
 
 /// 添加公共参数
@@ -175,7 +189,7 @@
     NSString *codeKey = [FMHttpConfig shared].codeKey;
     NSString *messageKey = [FMHttpConfig shared].messageKey;
     NSString *dataKey = [FMHttpConfig shared].dataKey;
-    NSString *successCode = [FMHttpConfig shared].successCode;
+    NSArray<NSString *> *successCodes = [FMHttpConfig shared].successCodes;
     
     // 业务状态码NSString类型接收
     NSString *responseCode = @"";
@@ -191,6 +205,12 @@
     FMError *fmError = nil;
 
     if(error) {
+        if([error.domain isEqualToString:NSURLErrorDomain]) {
+            if(error.code == NSURLErrorTimedOut) {
+                // timeout
+            }
+        }
+        
         // http请求失败处理
         fmError = [FMError processError:error];
         fmError.code = responseCode;
@@ -201,7 +221,7 @@
         // http请求成功，业务逻辑处理
         // 业务请求成功，响应的code与服务的成功状态码对比
         BOOL bussinessSuccess = NO;
-        if([responseCode isEqualToString:successCode]) {
+        if([successCodes containsObject:responseCode]) {
             bussinessSuccess = YES;
         }
         
@@ -223,6 +243,27 @@
     return fmResponse;
 }
 
+- (AFHTTPRequestSerializer *)requestSerializer:(FMRequest *)request {
+    FMRequestDataFormat format = FMHttpConfig.shared.dataFormat;
+    if(request.dataFormat != FMRequestDataFormatDefault) {
+        format = request.dataFormat;
+    }
+    switch (format) {
+        case FMRequestDataFormatDefault:
+        case FMRequestDataFormatHTTP:
+            return [AFHTTPRequestSerializer serializer];
+            break;
+            
+        case FMRequestDataFormatJSON:
+            return [AFJSONRequestSerializer serializer];
+            break;
+            
+        case FMRequestDataFormatPlist:
+            return [AFPropertyListRequestSerializer serializer];
+            break;
+    }
+}
+
 // 结果校验
 - (BOOL)validObject:(id)responseObject {
     return [NSJSONSerialization isValidJSONObject:responseObject];
@@ -231,6 +272,43 @@
 #pragma mark - 网络检测
 - (BOOL)networkReachable {
     return [AFNetworkReachabilityManager sharedManager].reachable;
+}
+
+#pragma mark -
++ (void)uploadFile:(FMRequest *)request
+          progress:(void (^)(NSProgress * _Nonnull))uploadProgress
+           success:(void (^)(NSURLSessionDataTask * _Nonnull, id _Nonnull))success
+           failure:(void (^)(NSURLSessionDataTask * _Nonnull, NSError * _Nonnull))failure {
+    NSError *serializationError = nil;
+//    NSMutableURLRequest *request = [self.requestSerializer multipartFormRequestWithMethod:@"POST" URLString:[[NSURL URLWithString:URLString relativeToURL:self.baseURL] absoluteString] parameters:parameters constructingBodyWithBlock:block error:&serializationError];
+//    for (NSString *headerField in headers.keyEnumerator) {
+//        [request addValue:headers[headerField] forHTTPHeaderField:headerField];
+//    }
+//    if (serializationError) {
+//        if (failure) {
+//            dispatch_async(self.completionQueue ?: dispatch_get_main_queue(), ^{
+//                failure(nil, serializationError);
+//            });
+//        }
+//
+//        return nil;
+//    }
+//
+//    __block NSURLSessionDataTask *task = [self uploadTaskWithStreamedRequest:request progress:uploadProgress completionHandler:^(NSURLResponse * __unused response, id responseObject, NSError *error) {
+//        if (error) {
+//            if (failure) {
+//                failure(task, error);
+//            }
+//        } else {
+//            if (success) {
+//                success(task, responseObject);
+//            }
+//        }
+//    }];
+//
+//    [task resume];
+//
+//    return task;
 }
 
 @end

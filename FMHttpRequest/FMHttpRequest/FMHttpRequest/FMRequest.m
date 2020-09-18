@@ -22,26 +22,6 @@
     return self;
 }
 
-//- (FMHttpReuqestMethod)method {
-//    return FMHttpReuqestMethodPost;
-//}
-//
-//- (NSString *)baseUrl {
-//    return @"";
-//}
-//
-//- (NSDictionary *)params {
-//    return @{};
-//}
-//
-//- (NSString *)path {
-//    return @"";
-//}
-//
-//- (NSTimeInterval)timeoutInterval {
-//    return 0;
-//}
-
 #pragma mark -
 - (NSString *)requestMethod {
     switch (self.method) {
@@ -101,6 +81,13 @@
     };
 }
 
+- (FMRequest * _Nonnull (^)(NSDictionary * _Nullable))reqHttpHeader {
+    return ^ (NSDictionary *httpHeader) {
+        self.httpHeader = httpHeader;
+        return self;
+    };
+}
+
 - (FMRequest * _Nonnull (^)(__unsafe_unretained Class _Nullable))resultClass {
     return ^ (Class class) {
         self.responseClass = class;
@@ -115,8 +102,16 @@
     };
 }
 
+- (FMRequest * _Nonnull (^)(FMRequestDataFormat))reqDataFormat {
+    return ^ (FMRequestDataFormat format) {
+        self.dataFormat = format;
+        return self;
+    };
+}
+
 #pragma mark -
 - (NSString *)description {
     return [NSString stringWithFormat:@"url = %@, method = %lu, params = %@", self.baseUrl, (unsigned long)self.method, self.params];
 }
+
 @end

@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "FMRequest.h"
 #import "FMResponse.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -15,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @optional
 
-+ (void)willSend;
++ (void)willSend:(FMRequest *)request;
 
 + (void)didReceive:(nullable NSURLSessionTask *)task responseObject:(FMResponse *)response error:(nullable NSError *)error;
 

@@ -42,9 +42,9 @@
     config.plugins = @[[FMHttpLogger class], [FMLoadingPlugin class]];
     config.parse = [[CustomParse alloc] init];
     config.baseURL = @"https://api.apiopen.top";
-    config.publicParams = nil;
     config.publicParams = @{@"version": @"2.0"};
-    config.httpRequestHeaders = @{@"userAgent_t": @"agent"};
+    config.publicRequestHeaders = @{@"userAgent_t": @"agent"};
+    config.dataFormat = FMRequestDataFormatDefault;
     
     NSDictionary *params = @{@"page": @(1),
                              @"count": @(2),
@@ -79,27 +79,41 @@
 ////        NSLog(@"error: %@", error.error);
 //    }];
     
-    [self fetchList:^(NSArray<VideoModel *> *result, FMResponse *response) {
-        
+    // 1
+    [self fetchList:params success:^(NSArray<VideoModel *> *result, FMResponse *response) {
+
     } fail:^(FMError * _Nonnull error) {
-        
+
     }];
+    
+    // 2
+//    [self fetchList];
 }
 
-- (void)fetchList:(FMSuccessBlock(NSArray<VideoModel *> *))success fail:(FMFailBlock)fail {
-    NSDictionary *params = @{@"page": @(1),
-                             @"count": @(10),
-                             @"type": @"video"};
-    
+- (void)fetchList:(NSDictionary *)params success:(FMSuccessBlock(NSArray<VideoModel *> *))success fail:(FMFailBlock)fail {
     FMRequest *request = FMRequest.build()
     .reqUrl(@"/getJoke")
-    .reqMethod(FMHttpReuqestMethodPost)
     .reqParams(params)
     .resultClass(VideoModel.class)
+    .reqDataFormat(FMRequestDataFormatDefault)
     .resSampleData([self readJson:@"Video"]);
     
     [FMHttpManager sendRequest:request success:success fail:fail];
 }
+
+//- (void)fetchList:(NSDictionary *)params {
+//    FMRequest *request = FMRequest.build()
+//    .reqUrl(@"/getJoke")
+//    .reqParams(params)
+//    .resultClass(VideoModel.class)
+//    .resSampleData([self readJson:@"Video"]);
+//
+//    [FMHttpManager sendRequest:request success:^(id  _Nonnull result, FMResponse * _Nonnull response) {
+//
+//    } fail:^(FMError * _Nonnull error) {
+//
+//    }];
+//}
 
 - (id)readJson:(NSString *)name {
     NSString *path = [[NSBundle mainBundle] pathForResource:name ofType:@"json"];

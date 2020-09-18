@@ -10,7 +10,6 @@
 #import "AFNetworking.h"
 #import "FMRequest.h"
 #import "FMResponse.h"
-//#import "FMParse.h"
 #import "FMHttpParseDelegate.h"
 #import "FMError.h"
 
@@ -24,9 +23,6 @@ typedef void(^FMFailBlock)(FMError *error);
 
 @property (nonatomic, strong, readonly) AFURLSessionManager *manager;
 
-// json转model的解析器，默认使用MJExtension
-@property (nonatomic, strong) id<FMHttpParseDelegate> parse;
-
 /// 单例
 + (FMHttpManager *)shared;
 
@@ -37,6 +33,18 @@ typedef void(^FMFailBlock)(FMError *error);
 + (void)sendRequest:(FMRequest *)request
             success:(FMSuccessBlock(id))success
                fail:(FMFailBlock)fail;
+
+/// 上传文件
+/// @param request 请求对象
+/// @param uploadProgress 上传进度回调
+/// @param success 成功回调
+/// @param failure 失败回调
++ (void)uploadFile:(FMRequest *)request
+          progress:(nullable void (^)(NSProgress * _Nonnull))uploadProgress
+           success:(void (^)(NSURLSessionDataTask *task, id responseObject))success
+           failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure;
+
+//+ (void)downloadFile:(FMRequest *)request;
 
 @end
 

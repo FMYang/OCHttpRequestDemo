@@ -24,14 +24,15 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
+        _dataFormat = FMRequestDataFormatJSON;
         _baseURL = @"";
         _dataKey = @"data";
         _codeKey = @"code";
         _messageKey = @"message";
-        _successCode = @"200";
+        _successCodes = @[@"200"];
         _timeoutInterval = 30.0;
         _parse = nil;
-        _httpRequestHeaders = @{};
+        _publicRequestHeaders = @{};
     }
     return self;
 }

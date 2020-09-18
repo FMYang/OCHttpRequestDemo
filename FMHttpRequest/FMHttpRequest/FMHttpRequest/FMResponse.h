@@ -23,16 +23,13 @@ typedef NS_ENUM(NSUInteger, FMResponseState) {
 /// 请求对象
 @property (nonatomic, strong) FMRequest *request;
 
-/// 原始请求对象
-@property (nonatomic, strong) NSURLRequest *orignalrequest;
-
 /// 响应对象
 @property (nonatomic, strong) NSURLResponse *response;
 
-/// 原始响应数据
+/// 响应数据
 @property (nonatomic, strong) id responseObject;
 
-/// 响应状态码
+/// 响应状态
 @property (nonatomic, assign) FMResponseState state;
 
 /// code
