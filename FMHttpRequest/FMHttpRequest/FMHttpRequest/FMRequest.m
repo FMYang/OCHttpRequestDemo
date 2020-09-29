@@ -13,11 +13,16 @@
                                    reason:[NSString stringWithFormat:@"You must override %@ in a subclass.", NSStringFromSelector(_cmd)] \
                                  userInfo:nil]; \
 
+@implementation FMFileInfo
+
+@end
+
 @implementation FMRequest
 
 - (instancetype)init {
     if(self = [super init]) {
         _method = FMHttpReuqestMethodPost;
+        _dataFormat = FMRequestDataFormatJSON;
     }
     return self;
 }
@@ -105,6 +110,13 @@
 - (FMRequest * _Nonnull (^)(FMRequestDataFormat))reqDataFormat {
     return ^ (FMRequestDataFormat format) {
         self.dataFormat = format;
+        return self;
+    };
+}
+
+- (FMRequest * _Nonnull (^)(NSArray<FMFileInfo *> * _Nullable))reqFileInfos {
+    return ^ (NSArray<FMFileInfo *> * files) {
+        self.uploadFileInfos = files;
         return self;
     };
 }

@@ -47,6 +47,8 @@
 		E4C12E8B2394C69B0094841D /* VideoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = E4C12E8A2394C69B0094841D /* VideoModel.m */; };
 		E4C12E8E2394E79B0094841D /* FMHttpLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = E4C12E8D2394E79B0094841D /* FMHttpLogger.m */; };
 		E4C13134239A60A70094841D /* CustomRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = E4C13133239A60A70094841D /* CustomRequest.m */; };
+		E4F3D3AD25219E1300545E40 /* test.JPG in Resources */ = {isa = PBXBuildFile; fileRef = E4F3D3AC25219E1300545E40 /* test.JPG */; };
+		E4F3D3AF2521BE7A00545E40 /* test1.png in Resources */ = {isa = PBXBuildFile; fileRef = E4F3D3AE2521BE7A00545E40 /* test1.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -154,6 +156,8 @@
 		E4C12E8D2394E79B0094841D /* FMHttpLogger.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FMHttpLogger.m; sourceTree = "<group>"; };
 		E4C13132239A60A70094841D /* CustomRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CustomRequest.h; sourceTree = "<group>"; };
 		E4C13133239A60A70094841D /* CustomRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CustomRequest.m; sourceTree = "<group>"; };
+		E4F3D3AC25219E1300545E40 /* test.JPG */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = test.JPG; sourceTree = "<group>"; };
+		E4F3D3AE2521BE7A00545E40 /* test1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test1.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -204,6 +208,8 @@
 		E4C12DF82390FDF40094841D /* FMHttpRequest */ = {
 			isa = PBXGroup;
 			children = (
+				E4F3D3AE2521BE7A00545E40 /* test1.png */,
+				E4F3D3AC25219E1300545E40 /* test.JPG */,
 				E4C12E882394C68D0094841D /* Model */,
 				E4C12E7D2394B49F0094841D /* YYModel */,
 				E4C12E542394A5290094841D /* MJExtension */,
@@ -450,8 +456,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				E4C12E092390FDFB0094841D /* LaunchScreen.storyboard in Resources */,
+				E4F3D3AD25219E1300545E40 /* test.JPG in Resources */,
 				E42AF46A250F55CA003D4762 /* Video.json in Resources */,
 				E4C12E062390FDFB0094841D /* Assets.xcassets in Resources */,
+				E4F3D3AF2521BE7A00545E40 /* test1.png in Resources */,
 				E4C12E042390FDF40094841D /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

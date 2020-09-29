@@ -37,19 +37,19 @@
     return _manager;
 }
 
-+ (void)sendRequest:(FMRequest *)request
++ (nullable NSURLSessionDataTask *)sendRequest:(FMRequest *)request
             success:(FMSuccessBlock(id))success
                fail:(FMFailBlock)fail {
-    [[self shared] sendRequest:request success:success fail:fail];
+    return [[self shared] sendRequest:request success:success fail:fail];
 }
 
-- (void)sendRequest:(FMRequest *)request
+- (nullable NSURLSessionDataTask *)sendRequest:(FMRequest *)request
             success:(FMSuccessBlock(id))success
                fail:(FMFailBlock)fail {
-    [self dataTaskWithRequest:request success:success fail:fail];
+    return [self dataTaskWithRequest:request success:success fail:fail];
 }
 
-- (void)dataTaskWithRequest:(FMRequest *)request
+- (nullable NSURLSessionDataTask *)dataTaskWithRequest:(FMRequest *)request
                     success:(FMSuccessBlock(id))success
                        fail:(FMFailBlock)fail {
     NSMutableURLRequest *urlRequest = [self serializerRequest:request];
@@ -82,7 +82,7 @@
             }
         }];
         
-        return;
+        return nil;
     }
     
     __block NSURLSessionDataTask *task = nil;
@@ -100,6 +100,7 @@
         }];
     }];
     [task resume];
+    return task;
 }
 
 // 请求参数序列化 FMRequest -> NSURLRequest
@@ -107,15 +108,7 @@
 - (NSMutableURLRequest *)serializerRequest:(FMRequest *)request {
     NSError *serializationError = nil;
     
-    NSURL *baseURL;
-    // 优先使用FMRequest设置的baseURL，如果为设置，则使用默认配置的URL
-    if(request.baseUrl.length > 0) {
-        baseURL = [NSURL URLWithString:request.baseUrl];
-    } else if([FMHttpConfig shared].baseURL.length > 0) {
-        baseURL = [NSURL URLWithString:[FMHttpConfig shared].baseURL];
-    } else {
-        @throw @"未设置服务器服务器地址";
-    }
+    NSURL *baseURL = [self baseUrl:request];
     
     // 添加公共请求参数
     NSDictionary *params = [self addPublicParams:request.params];
@@ -130,6 +123,19 @@
     [self addHttpHeader:urlRequest fmRequest:request];
     
     return urlRequest;
+}
+
+- (NSURL *)baseUrl:(FMRequest *)request {
+    NSURL *baseURL;
+    // 优先使用FMRequest设置的baseURL，如果为设置，则使用默认配置的URL
+    if(request.baseUrl.length > 0) {
+        baseURL = [NSURL URLWithString:request.baseUrl];
+    } else if([FMHttpConfig shared].baseURL.length > 0) {
+        baseURL = [NSURL URLWithString:[FMHttpConfig shared].baseURL];
+    } else {
+        @throw @"未设置服务器服务器地址";
+    }
+    return baseURL;
 }
 
 /// 添加请求头
@@ -275,40 +281,48 @@
 }
 
 #pragma mark -
-+ (void)uploadFile:(FMRequest *)request
++ (NSURLSessionDataTask *)uploadFile:(FMRequest *)request
           progress:(void (^)(NSProgress * _Nonnull))uploadProgress
            success:(void (^)(NSURLSessionDataTask * _Nonnull, id _Nonnull))success
-           failure:(void (^)(NSURLSessionDataTask * _Nonnull, NSError * _Nonnull))failure {
+           failure:(void (^)(NSURLSessionDataTask * _Nullable, NSError * _Nonnull))failure {
     NSError *serializationError = nil;
-//    NSMutableURLRequest *request = [self.requestSerializer multipartFormRequestWithMethod:@"POST" URLString:[[NSURL URLWithString:URLString relativeToURL:self.baseURL] absoluteString] parameters:parameters constructingBodyWithBlock:block error:&serializationError];
-//    for (NSString *headerField in headers.keyEnumerator) {
-//        [request addValue:headers[headerField] forHTTPHeaderField:headerField];
-//    }
-//    if (serializationError) {
-//        if (failure) {
-//            dispatch_async(self.completionQueue ?: dispatch_get_main_queue(), ^{
-//                failure(nil, serializationError);
-//            });
-//        }
-//
-//        return nil;
-//    }
-//
-//    __block NSURLSessionDataTask *task = [self uploadTaskWithStreamedRequest:request progress:uploadProgress completionHandler:^(NSURLResponse * __unused response, id responseObject, NSError *error) {
-//        if (error) {
-//            if (failure) {
-//                failure(task, error);
-//            }
-//        } else {
-//            if (success) {
-//                success(task, responseObject);
-//            }
-//        }
-//    }];
-//
-//    [task resume];
-//
-//    return task;
+    NSURL *baseUrl = [FMHttpManager.shared baseUrl:request];
+    
+    void (^bodyBlock)(id <AFMultipartFormData> formData) = ^(id <AFMultipartFormData> formData) {
+        NSArray<FMFileInfo *> *files = request.uploadFileInfos;
+        for(FMFileInfo *info in files) {
+            [formData appendPartWithFileData:info.data name:info.name fileName:info.fileName mimeType:info.mimeType];
+        }
+    };
+    
+    NSMutableURLRequest *uploadRequest = [[FMHttpManager.shared requestSerializer:request] multipartFormRequestWithMethod:@"POST" URLString:[[NSURL URLWithString:request.path relativeToURL:baseUrl] absoluteString] parameters:request.params constructingBodyWithBlock:bodyBlock error:&serializationError];
+    
+    [FMHttpManager.shared addHttpHeader:uploadRequest fmRequest:request];
+    
+    if(serializationError) {
+        if (failure) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                failure(nil, serializationError);
+            });
+        }
+        return nil;
+    }
+
+    __block NSURLSessionDataTask *task = [FMHttpManager.shared.manager uploadTaskWithStreamedRequest:uploadRequest progress:uploadProgress completionHandler:^(NSURLResponse * __unused response, id responseObject, NSError *error) {
+        if (error) {
+            if (failure) {
+                failure(task, error);
+            }
+        } else {
+            if (success) {
+                success(task, responseObject);
+            }
+        }
+    }];
+
+    [task resume];
+
+    return task;
 }
 
 @end

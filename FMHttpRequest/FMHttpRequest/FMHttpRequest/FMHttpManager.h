@@ -30,19 +30,19 @@ typedef void(^FMFailBlock)(FMError *error);
 /// @param request 请求对象
 /// @param success 成功
 /// @param fail 失败
-+ (void)sendRequest:(FMRequest *)request
-            success:(FMSuccessBlock(id))success
-               fail:(FMFailBlock)fail;
++ (nullable NSURLSessionDataTask *)sendRequest:(FMRequest *)request
+                                       success:(FMSuccessBlock(id))success
+                                          fail:(FMFailBlock)fail;
 
 /// 上传文件
 /// @param request 请求对象
 /// @param uploadProgress 上传进度回调
 /// @param success 成功回调
 /// @param failure 失败回调
-+ (void)uploadFile:(FMRequest *)request
-          progress:(nullable void (^)(NSProgress * _Nonnull))uploadProgress
-           success:(void (^)(NSURLSessionDataTask *task, id responseObject))success
-           failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure;
++ (nullable NSURLSessionDataTask *)uploadFile:(FMRequest *)request
+                                     progress:(nullable void (^)(NSProgress * _Nonnull))uploadProgress
+                                      success:(void (^)(NSURLSessionDataTask *task, id responseObject))success
+                                      failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure;
 
 //+ (void)downloadFile:(FMRequest *)request;
 

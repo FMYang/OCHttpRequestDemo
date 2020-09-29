@@ -22,19 +22,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
-    
-    [self readJson:@"Video"];
-    
     // https://api.apiopen.top/getJoke?page=1&count=2&type=video （实时段子,神评版本）
     // https://api.asilu.com/today/ (历史上的今天)
-    // 模拟数据
-//    FMRequest *request = [[FMRequest alloc] init];
-//    request.method = FMHttpReuqestMethodPost;
-//    request.baseUrl = @"https://api.apiopen.top";
-//    request.path = @"/getJoke";
-//    request.params = @{@"page":@1, @"count":@10, @"type":@"video"};
-//    request.responseClass = [VideoModel class];
     
     // 设置网络
     FMHttpConfig *config = [FMHttpConfig shared];
@@ -79,17 +68,18 @@
 ////        NSLog(@"error: %@", error.error);
 //    }];
     
-    // 1
+    // 1、request
     [self fetchList:params success:^(NSArray<VideoModel *> *result, FMResponse *response) {
 
     } fail:^(FMError * _Nonnull error) {
 
     }];
     
-    // 2
-//    [self fetchList];
+    // 2、upload file
+    [self uploadFile];
 }
 
+// post请求 封装
 - (void)fetchList:(NSDictionary *)params success:(FMSuccessBlock(NSArray<VideoModel *> *))success fail:(FMFailBlock)fail {
     FMRequest *request = FMRequest.build()
     .reqUrl(@"/getJoke")
@@ -101,6 +91,7 @@
     [FMHttpManager sendRequest:request success:success fail:fail];
 }
 
+// post请求 直接
 //- (void)fetchList:(NSDictionary *)params {
 //    FMRequest *request = FMRequest.build()
 //    .reqUrl(@"/getJoke")
@@ -124,6 +115,44 @@
         return object;
     }
     return nil;
+}
+
+
+#pragma mark - 上传文件
+- (NSDictionary *)commonRequestHeader {
+    return @{@"X-ZY-Platform": @"iOS",
+             @"X-ZY-Production": @"zycami",
+             @"X-ZY-Version": @"1.0.8"};
+}
+
+- (void)uploadFile {
+    NSDictionary *params = @{@"access_token": @"ChFvYXV0aC5hY2Nlc3NUb2tlbhJQeXge6V-szsN0rcHvikBOFWkkcNfc87sUFpiGHweLFs7US0YwOBhZ1tKligcooHQ9TiWqfmz_tLSZWWEjRcPPvGc4yg5G9FNOSlSwY9-3PfkaEi12HLC4YkSGiKG1_lVAiiG5ayIgo-eVKYaal6jYnM-l7n2vWG_PB5Y5D-EjYBheLTwIdVcoBTAB",
+                             @"others": @"{\"bizId\":\"zhiyun\",\"appid\":\"ks680887970458072564\",\"caption\":\"\",\"streamType\":\"video\"}",
+                             @"platform" : @"kuaishou",
+                             @"user_token": @"53231c2fc7a8c9820ed12fe868870489",
+                             @"userid": @"1862257"};
+    
+    FMFileInfo *info = [[FMFileInfo alloc] init];
+    UIImage *image = [UIImage imageNamed:@"test1"];
+    info.data = UIImagePNGRepresentation(image);
+    info.name = @"file";
+    info.fileName = @"cover.jpg";
+    info.mimeType = @"image/png";
+    
+    FMRequest *request = FMRequest.build()
+    .reqBaseUrl(@"https://service.zhiyun-tech.com")
+    .reqUrl(@"/public/v1/livevideo/publish")
+    .reqParams(params)
+//    .reqHttpHeader([self commonRequestHeader])
+    .reqFileInfos(@[info]);
+    
+    [FMHttpManager uploadFile:request progress:^(NSProgress * _Nonnull progress) {
+        NSLog(@"completedUnitCount = %lld, totalUnitCount = %ld, progress = %f ", progress.completedUnitCount, progress.totalUnitCount, 1.0 * progress.completedUnitCount / progress.totalUnitCount);
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
+        NSLog(@"finished %@", responseObject);
+    } failure:^(NSURLSessionDataTask * _Nonnull task, NSError * _Nonnull error) {
+        NSLog(@"error %@", error);
+    }];
 }
 
 @end
